@@ -19,6 +19,7 @@ var userid = new HashMap();
 // connection
 webSocketServer.on('connection', function (ws) {
     function sendAll(msg, sender = "Server") {
+        log("<"+sender+"> "+msg)
         var date = new Date()
         userid.forEach(function (value, key) {
             value.send(JSON.stringify(
