@@ -1,69 +1,20 @@
+<!DOCTYPE html>
 <html>
-        
+        <title>HYWT的聊天室</title>     
+        <link href="hywt.css" rel="stylesheet">
 <body>
     <div id="connect">
+            <form action="rp.php" method="get">
         欢迎使用HYWT的聊天室<br>
-        服务器地址：<input type="text" id="address" value="localhost"><br>
+        服务器地址：<input type="text" id="address"><br>
         名称：<input type="text" id="name"><br>
-        <input type="button" onclick="connect()" value="连接">
+        <input type="button" onclick="connect();" value="连接">
     </div>
-  
-        <script>
-            function escapeHtml(text) {
-                return text
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-            document.getElementById("connect").style.display = "none";
-            var sender = "HYWT"//document.getElementById("name").value;
-            var id=Math.random();
-            var ip = document.getElementById("address").value
-            var a = '<link href="hywt.css" rel="stylesheet"><textarea id="text" rows=8 cols=60></textarea><br><input type="button" onclick="send()" class=btn value="发送"><br>'
-            try {
-                var ws = new WebSocket("ws://" + ip + ":7777");
-            } catch (err) { document.writeln(err); }
-            ws.onopen = function (e) {
-                document.writeln(a + '<font color=EC5f67 size=3>成功连接到服务器</font><br>');
-                sendMessage("/login", sender,id)
-            }
-            ws.onmessage = function (event) {
-                console.log(event)
-                //if (JSON.parse(event.data).msg.substr(0, 6) == "/html "||JSON.parse(event.data).msg.sender=="Server") {
-                //    document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+escapeHtml("<" + JSON.parse(event.data).sender + "\> " )+ JSON.parse(event.data).msg + "<br>");
-                //} else 
-                if (JSON.parse(event.data).sender=="Server"){
-                    document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+"</font><br>"+"<font color=FAC863>"+escapeHtml("<" + JSON.parse(event.data).sender + "\> " )+ JSON.parse(event.data).msg + "</font><br>")
-                }else{
-                    document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+"</font><br>"+escapeHtml("<" + JSON.parse(event.data).sender + "\> " + JSON.parse(event.data).msg).replace(/\n/g,"<br>") + "<br>");
-                }
-            };
-            ws.onclose = function (e) {
-                document.writeln('<font color=EC5f67 size=3>连接已关闭</font><br>');
-            }
-            function send() {
-                sendMessage(document.getElementById('text').value, sender,id);
-                document.getElementById('text').value="";
-            }
-            function sendMessage(msg, sender,id) {
-                var date=new Date()
-                console.log(date.toLocaleDateString()+" "+date.toLocaleTimeString()+" <" + sender + "> " + msg)
-                ws.send(JSON.stringify(
-                    {
-                        "msg":
-                            msg,
-                        "sender": sender,
-                        "id":id,
-                        "time":date.toLocaleDateString()+" "+date.toLocaleTimeString()
-                    }
-                ))
-            };
-
-
-        </script>
-
+    <script>
+        function connect(){
+        window.location.href='chat.html#address='+document.getElementById('address').value+'&name='+document.getElementById('name').value
+    }
+    </script>
 </body>
 
 </html>

@@ -1,15 +1,11 @@
 <html>
-        
+<title>HYWT的聊天室</title>        
 <body>
-    <div id="connect">
-        欢迎使用HYWT的聊天室<br>
-        服务器地址：<input type="text" id="address" value="localhost"><br>
-        名称：<input type="text" id="name"><br>
-        <input type="button" onclick="connect()" value="连接">
-    </div>
+
   
         <script>
             function escapeHtml(text) {
+                //HTML转义
                 return text
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
@@ -17,34 +13,37 @@
                     .replace(/"/g, "&quot;")
                     .replace(/'/g, "&#039;");
             }
-            document.getElementById("connect").style.display = "none";
-            var sender = "tfengyej"//document.getElementById("name").value;
+            var param=window.location.href.split("#")[1].split("&");//获取参数
+            var sender = decodeURI(param[1].replace("name=",""))
             var id=Math.random();
-            var ip = document.getElementById("address").value
-            var a = '<link href="hywt.css" rel="stylesheet"><textarea id="text"></textarea><br><input type="button" onclick="send()" value="发送"><br>'
+            var ip = param[0].replace("address=","")
+            document.title="HYWT的聊天室 - "+ip
+            var a = '<link href="hywt.css" rel="stylesheet"><textarea id="text" rows=8 cols=60></textarea><br><input type="button" onclick="send()" class=btn value="发送"><br>'
             try {
-                var ws = new WebSocket("ws://" + ip + ":7777");
-            } catch (err) { document.writeln(err); }
+                if(!ip.includes(":")){
+                var ws = new WebSocket("ws://" + ip + ":16575");}else{var ws = new WebSocket("ws://" + ip);}
+            } catch (err) { alert(err); }
             ws.onopen = function (e) {
                 document.writeln(a + '<font color=EC5f67 size=3>成功连接到服务器</font><br>');
                 sendMessage("/login", sender,id)
             }
             ws.onmessage = function (event) {
-                console.log(event)
+                document.title="HYWT的聊天室 - "+ip
                 //if (JSON.parse(event.data).msg.substr(0, 6) == "/html "||JSON.parse(event.data).msg.sender=="Server") {
                 //    document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+escapeHtml("<" + JSON.parse(event.data).sender + "\> " )+ JSON.parse(event.data).msg + "<br>");
                 //} else 
                 if (JSON.parse(event.data).sender=="Server"){
                     document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+"</font><br>"+"<font color=FAC863>"+escapeHtml("<" + JSON.parse(event.data).sender + "\> " )+ JSON.parse(event.data).msg + "</font><br>")
                 }else{
-                    document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+"</font><br>"+escapeHtml("<" + JSON.parse(event.data).sender + "\> " + JSON.parse(event.data).msg) + "<br>");
+                    document.writeln("<font color=5FB3B3 size=2>"+JSON.parse(event.data).time+"</font><br>"+escapeHtml("<" + JSON.parse(event.data).sender + "\> " + JSON.parse(event.data).msg).replace(/\n/g,"<br>") + "<br>");
                 }
             };
             ws.onclose = function (e) {
-                document.writeln('<font color=EC5f67 size=3>连接已关闭</font><br>');
+                document.writeln('<font color=EC5f67 size=3>服务器已关闭</font><br>');
             }
             function send() {
-                sendMessage(document.getElementById('text').value, sender,id)
+                sendMessage(document.getElementById('text').value, sender,id);
+                document.getElementById('text').value="";
             }
             function sendMessage(msg, sender,id) {
                 var date=new Date()
